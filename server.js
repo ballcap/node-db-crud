@@ -7,11 +7,11 @@ const app = express();
 const port = 3001;
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'Normalized',
-  password: 'D1g1p0rt',
-  port: 5433,
+  user: 'avnadmin',
+  host: 'pg-1dae0a96-burneract-ef64.e.aivencloud.com',
+  database: 'defaultdb',
+  password: 'AVNS_AXUkLLJRuRTkJyz7rc5',
+  port: 12971,
 });
 
 app.use(cors());
