@@ -62,7 +62,7 @@ app.get('/chats', async (req, res) => {
 
 app.post('/chats', async (req, res) => {
     const { chatname, chatcomment } = req.body;
-    const chatdate = new Date().toISOString(); // Add current date
+    const chatdate = new Date().toISOString(); // Get current date and time in ISO format
 
     try {
         const client = await pool.connect();
