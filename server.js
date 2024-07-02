@@ -1,5 +1,5 @@
 const express = require('express');
-const pg = require('pg');
+const { Pool } = require('pg');
 const fs = require('fs');
 
 const app = express();
@@ -41,14 +41,14 @@ wp3uYUuQsnZrlow+x/cPg5APG8yxQfgm3bMj9vwAtufNIaJJkA==
     },
 };
 
-const client = new pg.Client(config);
+const pool = new Pool(config);
 
 app.get('/chats', async (req, res) => {
     try {
-        await client.connect();
+        const client = await pool.connect();
         const result = await client.query("SELECT * FROM chats");
         res.json(result.rows);
-        await client.end();
+        client.release();
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
