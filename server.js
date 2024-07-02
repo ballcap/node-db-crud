@@ -1,6 +1,9 @@
-const fs = require('fs');
+const express = require('express');
 const pg = require('pg');
-const url = require('url');
+const fs = require('fs');
+
+const app = express();
+const port = process.env.PORT || 3000; // Use environment port or 3000
 
 const config = {
     user: "avnadmin",
@@ -39,17 +42,19 @@ wp3uYUuQsnZrlow+x/cPg5APG8yxQfgm3bMj9vwAtufNIaJJkA==
 };
 
 const client = new pg.Client(config);
-client.connect(function (err) {
-    if (err)
-        throw err;
-    client.query("SELECT VERSION()", [], function (err, result) {
-        if (err)
-            throw err;
 
-        console.log(result.rows[0].version);
-        client.end(function (err) {
-            if (err)
-                throw err;
-        });
-    });
+app.get('/chats', async (req, res) => {
+    try {
+        await client.connect();
+        const result = await client.query("SELECT * FROM chats");
+        res.json(result.rows);
+        await client.end();
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Server is running on https://node-db-crud.onrender.com`);
 });
