@@ -1,9 +1,12 @@
 const express = require('express');
 const { Pool } = require('pg');
+const cors = require('cors'); // Import cors middleware
 const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 3000; // Use environment port or 3000
+
+app.use(cors()); // Use the cors middleware
 
 const config = {
     user: "avnadmin",
@@ -43,11 +46,31 @@ wp3uYUuQsnZrlow+x/cPg5APG8yxQfgm3bMj9vwAtufNIaJJkA==
 
 const pool = new Pool(config);
 
+app.use(express.json()); // Add middleware to parse JSON bodies
+
 app.get('/chats', async (req, res) => {
     try {
         const client = await pool.connect();
         const result = await client.query("SELECT * FROM chats");
         res.json(result.rows);
+        client.release();
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+app.post('/chats', async (req, res) => {
+    const { chatname, chatcomment } = req.body;
+    const chatdate = new Date().toISOString(); // Add current date
+
+    try {
+        const client = await pool.connect();
+        const result = await client.query(
+            "INSERT INTO chats (chatname, chatdate, chatcomment) VALUES ($1, $2, $3) RETURNING *",
+            [chatname, chatdate, chatcomment]
+        );
+        res.json(result.rows[0]);
         client.release();
     } catch (err) {
         console.error(err);
